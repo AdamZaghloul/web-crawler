@@ -1,21 +1,34 @@
 package main
 
-func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error){
+import (
+	"strings"
+
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
+)
+
+func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
+	links := []string{}
 	r := strings.NewReader(htmlBody)
-	nodes := html.Parse(r)
-
-	for n := range nodes.Descendents(){
-		traverseNode(n)
+	nodes, err := html.Parse(r)
+	if err != nil {
+		return links, err
 	}
-}
 
-func traverseNode(html.Node) (error){
-	if n.Type == html.ElementNode && n.DataAtom == atom.A {
-		for _, a := range n.Attr {
-			if a.Key == "href" {
-				fmt.Println(a.Val)
-				break
+	for n := range nodes.Descendants() {
+		if n.Type == html.ElementNode && n.DataAtom == atom.A {
+			for _, a := range n.Attr {
+				if a.Key == "href" {
+					link := a.Val
+					if string(link[0]) == "/" {
+						link = rawBaseURL + link
+					}
+					links = append(links, link)
+					break
+				}
 			}
 		}
 	}
+
+	return links, nil
 }

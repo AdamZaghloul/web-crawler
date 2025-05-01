@@ -1,13 +1,16 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestGetURLsFromHTML(t *testing.T) {
 	tests := []struct {
-		name     string
-		inputURL string
+		name      string
+		inputURL  string
 		inputBody string
-		expected string
+		expected  []string
 	}{
 		{
 			name:     "simple test",
@@ -60,12 +63,12 @@ func TestGetURLsFromHTML(t *testing.T) {
 
 	for i, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := getURLsFromHTML(tc.input)
+			actual, err := getURLsFromHTML(tc.inputBody, tc.inputURL)
 			if err != nil {
 				t.Errorf("Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
 				return
 			}
-			if actual != tc.expected {
+			if !reflect.DeepEqual(actual, tc.expected) {
 				t.Errorf("Test %v - %s FAIL: expected URL: %v, actual: %v", i, tc.name, tc.expected, actual)
 			}
 		})
