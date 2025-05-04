@@ -82,6 +82,8 @@ func main() {
 	go cfg.crawlPage(rawBaseURL)
 
 	cfg.wg.Wait()
+
+	printReport(cfg.pages, cfg.baseURL.String())
 }
 
 func getHTML(rawURL string) (string, error) {
